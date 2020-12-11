@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+#define fin freopen("input.txt","r", stdin);
+#define fout freopen("output.txt","w",stdout);
+using namespace std;
+int main()
+{
+//    fin;
+//    fout;
+    int t, k, x, y, i, j, used[55][55] = {0}, errorCounter = 0;
+    queue< pair<int, int> > q;
+    char ch[55][55];
+    cin >> t;
+    while(t--) {
+        errorCounter = 0;
+        cin >> x >> y;
+ 
+        for(i = 1; i <= x; i ++) {
+            for(j = 1; j <= y; j ++) {
+                cin >> ch[i][j];
+            }
+        }
+        if((ch[x - 1][y] == 'B' && x > 1) || (ch[x][y - 1] == 'B' && y > 1)) ch[x][y] = '#';
+        for(i = 1; i <= x; i ++) {
+            for(j = 1; j <= y; j ++) {
+                if(ch[i][j] == 'B' && i > 1 && ch[i - 1][j] == '.') ch[i - 1][j] = '#';
+                if(ch[i][j] == 'B' && i < x && ch[i + 1][j] == '.') ch[i + 1][j] = '#';
+                if(ch[i][j] == 'B' && j > 1 && ch[i][j - 1] == '.') ch[i][j - 1] = '#';
+                if(ch[i][j] == 'B' && j < y && ch[i][j + 1] == '.') ch[i][j + 1] = '#';
+            }
+        }
+        for(i = 1; i <= x; i ++) {
+            for(j = 1; j <= y; j ++) {
+                if(ch[i][j] == 'G' && ((i > 1 && ch[i - 1][j] == 'B') || (i < x && ch[i + 1][j] == 'B') || (j > 1 && ch[i][j - 1] == 'B') || (j < y && ch[i][j + 1] == 'B'))){
+                    cout << "No" << endl;
+                    errorCounter ++;
+                    break;
+                }
+            }
+            if(errorCounter > 0) break;
+        }
+        if(errorCounter == 0) {
+            if(ch[x][y] != '#') {
+                memset(used, 0, 3025*(sizeof(int)));
+                used[x][y] ++;
+                q.push(make_pair(x, y));
+                while(!q.empty()) {
+                    int x2 = q.front().first, y2 = q.front().second;
+                    ch[x2][y2] = 'X';
+                    q.pop();
+                    if(x2 > 1 && used[x2 - 1][y2] == 0 && (ch[x2 - 1][y2] == '.' || ch[x2 - 1][y2] == 'G')) {
+                        used[x2 - 1][y2] ++;
+                        q.push(make_pair(x2 - 1, y2));
+                    }
+                    if(x2 < x && used[x2 + 1][y2] == 0 && (ch[x2 + 1][y2] == '.' || ch[x2 + 1][y2] == 'G')) {
+                        used[x2 + 1][y2] ++;
+                        q.push(make_pair(x2 + 1, y2));
+                    }
+                    if(y2 > 1 && used[x2][y2 - 1] == 0 && (ch[x2][y2 - 1] == '.' || ch[x2][y2 - 1] == 'G')) {
+                        used[x2][y2 - 1] ++;
+                        q.push(make_pair(x2, y2 - 1));
+                    }
+                    if(y2 < y && used[x2][y2 + 1] == 0 && (ch[x2][y2 + 1] == '.' || ch[x2][y2 + 1] == 'G')) {
+                        used[x2][y2 + 1] ++;
+                        q.push(make_pair(x2, y2 + 1));
+                    }
+                }
+            }
+            for(i = 1; i <= x; i ++) {
+                for(j = 1; j <= y; j ++) {
+                    if(ch[i][j] == 'G') {
+                        errorCounter ++;
+                        break;
+                    }
+                }
+                if(errorCounter > 0) break;
+            }
+            if(errorCounter == 0) cout << "Yes" << endl;
+            else cout << "No" << endl;
+        }
+    }
+}
